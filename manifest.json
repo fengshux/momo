@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "momo",
+  "version": "1.0",
+
+  "description": "墨墨字典，使用墨墨查词，可以加入墨墨单词本",
+  "homepage_url": "https://github.com/fengshux/momo",
+  "icons": {
+    "48": "icons/momo-48.png"
+  },
+
+  "permissions": ["activeTab"],
+
+  "browser_action": {
+    "default_icon": "icons/beasts-32.png",
+    "default_title": "Beastify",
+    "default_popup": "popup/choose_beast.html"
+  },
+
+  "web_accessible_resources": [
+    "asset/frog.jpg",
+    "asset/turtle.jpg",
+    "asset/snake.jpg"
+  ]
+}
