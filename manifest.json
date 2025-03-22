@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "momo",
   "version": "1.0",
 
@@ -8,18 +8,28 @@
   "icons": {
     "48": "icons/momo-48.png"
   },
-
-  "permissions": ["activeTab"],
-
-  "browser_action": {
-    "default_icon": "icons/beasts-32.png",
-    "default_title": "Beastify",
-    "default_popup": "popup/choose_beast.html"
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": false
   },
-
-  "web_accessible_resources": [
-    "asset/frog.jpg",
-    "asset/turtle.jpg",
-    "asset/snake.jpg"
-  ]
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "icons/momo-48.png"
+    }
+  }
 }
