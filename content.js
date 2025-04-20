@@ -1,5 +1,25 @@
+// 新增异步函数获取单词信息
+async function fetchWordInfo(word, apiToken) {
+    try {
+      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`, {
+        headers: {
+          "Authorization": `Bearer ${apiToken}`,
+          "Content-Type": "application/json"
+        }
+      });
+  
+      if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
+      return await response.json();
+      
+    } catch (error) {
+      console.error('API调用错误:', error);
+      return { error: error.message };
+    }
+  }
+
+
 // 监听来自后台脚本的消息
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === "showPopup") {
         const word = message.word;
         // 在这里可以调用API获取单词的相关信息
@@ -73,6 +93,34 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         popup.querySelector(".popup-content p").textContent = 
             `Example definition for "${word}": A sample description.`;
         }, 500);
+
+        // 获取存储的设置
+        const { apiToken, tagName } = await browser.storage.local.get(['apiToken', 'tagName']);
+
+        // 验证Token
+        // if (!apiToken || !/^[a-zA-Z0-9]{64}$/.test(apiToken)) {
+        // popup.querySelector(".popup-content p").innerHTML = `
+        //     <span style="color: red">错误：请先配置有效的API Token</span>
+        // `;
+        // return;
+        // }
+
+        // 调用真实API
+        const data = await fetchWordInfo(word, apiToken);
+        
+        // 处理结果
+        if (data.error) {
+        popup.querySelector(".popup-content p").innerHTML = `
+            <span style="color: red">错误：${data.error}</span>
+        `;
+        } else {
+        const firstMeaning = data[0]?.meanings[0];
+        popup.querySelector(".popup-content p").innerHTML = `
+            <strong>${tagName || '默认标签'}:</strong><br>
+            ${firstMeaning?.partOfSpeech || 'n.'} - 
+            ${firstMeaning?.definitions[0]?.definition || '未找到定义'}
+        `;
+        }        
 
     }
 });
